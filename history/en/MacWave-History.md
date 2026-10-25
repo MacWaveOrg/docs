@@ -331,7 +331,7 @@ wave install ffmpeg --ver=9.0
 
 [^1]: MacWave: a package manager developed by Sha0huaZhang on 2026-08-05, whose first stable release came out on 2026-08-16; it has since moved under the MacWave organisation, with macwave.org as its website.
 
-[^2]: Homebrew: a package manager developed by Max Howell in 2019, characterised by downloading pre-built binary packages so that no local compilation is needed. It has since moved from a personal account to the Homebrew organisation; website: brew.sh.
+[^2]: Homebrew: a package manager developed by Max Howell in 2009, characterised by downloading pre-built binary packages so that no local compilation is needed. It has since moved from a personal account to the Homebrew organisation; website: brew.sh.
 
 [^3]: MacPorts: a package manager started jointly by several Apple employees in 2002, originally launched as part of the OpenDarwin project. Its characteristic is installing software into a separate directory, avoiding mixing files with system-provided software or with other package managers and thus reducing the risk of conflicts; website: macports.org.
 

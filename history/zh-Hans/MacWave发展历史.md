@@ -331,7 +331,7 @@ wave install ffmpeg --ver=9.0
 
 [^1]: MacWave：由Sha0huaZhang在2026-08-05的开发的包管理器，于2026-08-16发布首个正式版，现已迁移至MacWave组织名下，官网为macwave.org。
 
-[^2]: Homebrew：由Max Howell在2019年开发的包管理器，特点为下载预编译的二进制包，无需本机源码编译。现已从个人名下移交至Homebrew组织名下，官网为brew.sh。
+[^2]: Homebrew：由Max Howell在2009年开发的包管理器，特点为下载预编译的二进制包，无需本机源码编译。现已从个人名下移交至Homebrew组织名下，官网为brew.sh。
 
 [^3]: MacPorts：由几位苹果公司员工在 2002 年共同发起，最初作为 OpenDarwin 项目的一部分启动的包管理器。特点是将软件安装到独立的目录下，避免与系统自带软件或其它包管理器的文件混在一起，减少冲突风险，官网为macports.org。
 
