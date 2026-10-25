@@ -192,10 +192,10 @@ gaochengfang@gaochengfangdeMacBook-Air bin % cat wget@1.25.0/_DEPS
 "pcre2@10.42"
 "zlib@1.2.13"
 gaochengfang@gaochengfangdeMacBook-Air bin %
-# 进入 openssl 的依赖目录
+# enter openssl's dependency directory
 cd ~/.local/macwave/deps/openssl/openssl@3.0.15/
 
-# 看看里面有没有隐藏的标记文件
+# see whether any hidden marker files are inside
 ls -la | grep "depped"
 
 -rw-r--r--   1 gaochengfang  staff     0  9 23 20:46 .depped_dep_libevent@2.1.13
@@ -272,10 +272,10 @@ wave install {pkg} --unlink
 　　Example:
 
 ```bash
-# 脚本已在本地
+# script is already local
 bash install.sh --silent --dir-option=1
 
-# 直接从仓库安装
+# install straight from the repository
 curl -fsSL https://raw.githubusercontent.com/MacWaveOrg/MacWave/HEAD/lib/install.sh | bash -s -- --silent --dir-option=2
 ```
 
