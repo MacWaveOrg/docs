@@ -10,13 +10,103 @@
 
 为什么选择这个名字？其实是随便起的。最开始计划只是为了支持Mac，于是准备以Mac做前缀（名字对标MacPorts），随便起了一个名字。
 
-当天，我便利用DeepSeek网页端（那时候还没配置VS Code）写出最小原型，技术栈选择了最熟悉的Python(3.14.8)，并在本机实现（见下图）。
+当天，我便利用DeepSeek网页端（那时候还没配置VS Code）写出最小原型，技术栈选择了最熟悉的Python(3.14.8)，并在本机实现（见下方终端记录）。
 
-![安装MacWave 1.0.0并使用wave安装软件包](images/macwave-history-1.png)
+**1. 安装 1.0.0，并用 `wave install` 安装软件包**
 
-![wave list、wave search与wave info的输出](images/macwave-history-2.png)
+```text
+Last login: Wed Aug  5 21:11:31 on ttys002
+gaochengfang@gaochengfangdeMacBook-Air ~ % curl -fsSL https://raw.githubusercontent.com/Sha0huaZhang/MacWave/main/install.sh | bash
+🌊 Welcome to MacWave!
+🌊 Installing to /Users/gaochengfang/.local/macwave/bin...
+🌊 Downloading wave.py...
+🌊 Checking Python dependencies...
+🌊 'requests' library is already installed.
+🌊 Adding MacWave to PATH in /Users/gaochengfang/.zshrc...
 
-![wave update与卸载软件包](images/macwave-history-3.png)
+🌊 Installation complete!
+🌊 Try it now: wave install test_001
+🌊 To apply PATH changes, run: source /Users/gaochengfang/.zshrc
+gaochengfang@gaochengfangdeMacBook-Air ~ % source ~/.zshrc
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave -V
+MacWave 1.0.0 🌊
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave install test_001
+🌊 Error: Failed to fetch repository data: HTTPSConnectionPool(host='raw.githubusercontent.com', port=443): Read timed out. (read timeout=10)
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave install test_001
+🌊 Downloading test_001...
+. 🌊
+🌊 Successfully installed test_001 to /Users/gaochengfang/.local/macwave/bin/test_001
+🌊 Ready to ride! You can now run: test_001
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave info test_001
+🌊 Name:        test_001
+🌊 Version:     1.0.0
+🌊 Author:      Sha0huaZhang
+🌊 Description: MacWave test package.
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave install machox
+🌊 Downloading machox...
+........................ 🌊
+🌊 Successfully installed machox to /Users/gaochengfang/.local/macwave/bin/machox
+🌊 Ready to ride! You can now run: machox
+gaochengfang@gaochengfangdeMacBook-Air ~ % ls -la ~/.local/macwave/bin
+total 432
+drwxr-xr-x  5 gaochengfang  staff     160  8  5 21:25 .
+drwxr-xr-x  4 gaochengfang  staff     128  8  5 21:24 ..
+-rwxr-xr-x  1 gaochengfang  staff  194080  8  5 21:25 machox
+-rwxr-xr-x  1 gaochengfang  staff      44  8  5 21:24 test_001
+-rwxr-xr-x  1 gaochengfang  staff   17848  8  5 21:23 wave
+gaochengfang@gaochengfangdeMacBook-Air ~ % 
+```
+
+**2. `wave list`、`wave search` 与 `wave info` 的输出**
+
+```text
+Last login: Wed Aug  5 21:38:59 on ttys002
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave list
+🌊 Installed packages:
+  - test_001 (installed at /Users/gaochengfang)
+  - machox (installed at /Users/gaochengfang)
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave search core
+🌊 Found 1 package(s) matching 'core':
+  - machox: CoreTrust bypass for iOS 16.7 (20H19) & 17.0.1
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave search test
+🌊 Found 1 package(s) matching 'test':
+  - test_001: MacWave test package.
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave search notfound
+🌊 No packages found matching 'notfound'
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave info machox
+🌊 Name:        machox
+🌊 Version:     1.0.0
+🌊 Author:      Sha0huaZhang
+🌊 Description: CoreTrust bypass for iOS 16.7 (20H19) & 17.0.1
+🌊 Homepage:    https://github.com/Sha0huaZhang/MachOX
+gaochengfang@gaochengfangdeMacBook-Air ~ % 
+```
+
+**3. `wave update`、`wave upgrade` 与卸载**
+
+```text
+Last login: Wed Aug  5 21:43:35 on ttys004
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave update
+🌊 Updating package index...
+🌊 Package index updated successfully. Found 2 packages.
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave list
+🌊 Installed packages:
+  - test_001 (installed at /Users/gaochengfang)
+  - machox (installed at /Users/gaochengfang)
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave upgrade machox
+🌊 Upgrading 'machox' to version unknown...
+🌊 Downloading machox...
+........................ 🌊
+🌊 Successfully installed machox to /Users/gaochengfang/.local/macwave/bin/machox
+🌊 Ready to ride! You can now run: machox
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave uninstall test_001
+🌊 Removed binary: /Users/gaochengfang/.local/macwave/bin/test_001
+🌊 Successfully uninstalled 'test_001'.
+gaochengfang@gaochengfangdeMacBook-Air ~ % wave list
+🌊 Installed packages:
+  - machox (installed at /Users/gaochengfang)
+gaochengfang@gaochengfangdeMacBook-Air ~ % 
+```
 
 我深知域名对于一个项目的重要性，于是第二天立刻就在NameSilo[^9]购买了macwave.org作为项目域名（$14.99/年），并在DNS添加了一条302记录指向<https://github.com/Sha0huaZhang/MacWave>。
 
