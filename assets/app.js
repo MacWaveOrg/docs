@@ -60,6 +60,10 @@
         dirLink: document.getElementById('dir-link'),
         viewer: document.getElementById('viewer'),
         viewerFrame: document.getElementById('viewer-frame'),
+        viewerBody: document.getElementById('viewer-body'),
+        viewerPages: document.getElementById('viewer-pages'),
+        pdfPages: document.getElementById('pdf-pages'),
+        pdfStatus: document.getElementById('pdf-status'),
         viewerTitle: document.getElementById('viewer-title'),
         viewerOpen: document.getElementById('viewer-open'),
         viewerGh: document.getElementById('viewer-gh'),
@@ -407,24 +411,243 @@
         });
     }
 
-    /* ---------- PDF 阅读器 ---------- */
+    /* ---------- PDF 阅读器 ----------
+       用 PDF.js 把页面渲染到 canvas，按容器宽度缩放，
+       这样手机上不会横向溢出，也能通过滚动翻页。 */
+
+    var pdfjsLoading = null;
+    var pdfDoc = null;
+    var pdfUrl = '';
+    var pdfScale = 1;
+    var pdfSizes = [];
+    var pdfRendered = [];
+    var pdfObserver = null;
+    var pdfRenderTask = null;
+    var pageTicker = null;
+
+    function loadPdfjs() {
+        if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+        if (pdfjsLoading) return pdfjsLoading;
+
+        pdfjsLoading = new Promise(function (resolve, reject) {
+            var script = document.createElement('script');
+            script.src = 'assets/pdfjs/pdf.min.js';
+            script.onload = function () {
+                if (!window.pdfjsLib) {
+                    reject(new Error('pdfjs missing'));
+                    return;
+                }
+                window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'assets/pdfjs/pdf.worker.min.js';
+                resolve(window.pdfjsLib);
+            };
+            script.onerror = function () { reject(new Error('pdfjs failed')); };
+            document.head.appendChild(script);
+        });
+
+        return pdfjsLoading;
+    }
+
+    function showStatus(text) {
+        if (!text) {
+            el.pdfStatus.hidden = true;
+            el.pdfStatus.textContent = '';
+            return;
+        }
+        el.pdfStatus.textContent = text;
+        el.pdfStatus.hidden = false;
+    }
+
+    function updatePageIndicator() {
+        if (!pdfDoc) return;
+
+        // 以阅读区顶部向下 35% 处为判定线，按元素实际位置判断当前页
+        var bodyRect = el.viewerBody.getBoundingClientRect();
+        var line = bodyRect.top + bodyRect.height * 0.35;
+        var current = 1;
+
+        pdfRendered.forEach(function (page) {
+            var rect = page.wrapper.getBoundingClientRect();
+            if (rect.top <= line) current = page.number;
+        });
+
+        el.viewerPages.textContent = current + ' / ' + pdfDoc.numPages;
+        el.viewerPages.hidden = false;
+    }
+
+    function clearPdf() {
+        if (pdfObserver) {
+            pdfObserver.disconnect();
+            pdfObserver = null;
+        }
+        if (pdfRenderTask) {
+            try { pdfRenderTask.cancel(); } catch (error) { /* 忽略 */ }
+            pdfRenderTask = null;
+        }
+        pdfRendered = [];
+        pdfSizes = [];
+        el.pdfPages.textContent = '';
+        el.viewerPages.hidden = true;
+        if (pdfDoc) {
+            try { pdfDoc.destroy(); } catch (error) { /* 忽略 */ }
+            pdfDoc = null;
+        }
+    }
+
+    function renderPage(entry) {
+        if (entry.rendering || entry.done) return;
+        entry.rendering = true;
+
+        pdfDoc.getPage(entry.number).then(function (page) {
+            var viewport = page.getViewport({ scale: 1 });
+            var ratio = Math.min(window.devicePixelRatio || 1, 2);
+            var viewportScaled = page.getViewport({ scale: pdfScale * ratio });
+
+            var canvas = document.createElement('canvas');
+            canvas.width = Math.floor(viewportScaled.width);
+            canvas.height = Math.floor(viewportScaled.height);
+            canvas.style.width = '100%';
+            canvas.style.height = 'auto';
+            canvas.style.display = 'block';
+
+            entry.wrapper.textContent = '';
+            entry.wrapper.appendChild(canvas);
+            entry.wrapper.style.height = '';
+
+            pdfRenderTask = page.render({
+                canvasContext: canvas.getContext('2d'),
+                viewport: viewportScaled
+            });
+
+            return pdfRenderTask.promise.then(function () {
+                entry.done = true;
+                entry.rendering = false;
+                pdfRenderTask = null;
+            });
+        }).catch(function () {
+            entry.rendering = false;
+        });
+    }
+
+    function layoutPdf(pages) {
+        var available = el.viewerBody.clientWidth - 24;
+        pdfScale = Math.max(0.2, available / pages[0].width);
+        pdfSizes = pages;
+
+        el.pdfPages.textContent = '';
+        pdfRendered = [];
+
+        pages.forEach(function (info, index) {
+            var wrapper = document.createElement('div');
+            wrapper.className = 'pdf-page';
+            wrapper.style.width = '100%';
+            wrapper.style.maxWidth = Math.floor(info.width * pdfScale) + 'px';
+            wrapper.style.height = Math.floor(info.height * pdfScale) + 'px';
+
+            var entry = { number: index + 1, wrapper: wrapper, done: false, rendering: false };
+            pdfRendered.push(entry);
+            el.pdfPages.appendChild(wrapper);
+        });
+    }
+
+    function observePdfPages() {
+        // 没有 IntersectionObserver，或页面不可见（回调会被浏览器暂停）时直接全部渲染
+        if (!('IntersectionObserver' in window) || document.visibilityState === 'hidden') {
+            pdfRendered.forEach(renderPage);
+            return;
+        }
+
+        pdfObserver = new IntersectionObserver(function (records) {
+            records.forEach(function (record) {
+                if (!record.isIntersecting) return;
+                var entry = pdfRendered.filter(function (item) {
+                    return item.wrapper === record.target;
+                })[0];
+                if (entry) renderPage(entry);
+            });
+        }, { root: el.viewerBody, rootMargin: '400px 0px' });
+
+        pdfRendered.forEach(function (entry) { pdfObserver.observe(entry.wrapper); });
+    }
+
+    function openPdf(url, item) {
+        showStatus(t('loading'));
+        el.viewerFrame.hidden = true;
+
+        loadPdfjs()
+            .then(function (lib) { return lib.getDocument(url).promise; })
+            .catch(function () {
+                // PDF.js 不可用时退回浏览器自带的阅读器
+                showStatus('');
+                el.pdfPages.textContent = '';
+                el.viewerFrame.hidden = false;
+                el.viewerFrame.src = url;
+                return null;
+            })
+            .then(function (doc) {
+                if (!doc) return;
+                if (el.viewer.hidden || url !== pdfUrl) {
+                    try { doc.destroy(); } catch (error) { /* 忽略 */ }
+                    return;
+                }
+
+                pdfDoc = doc;
+                var sizes = [];
+                var tasks = [];
+                for (var i = 1; i <= doc.numPages; i += 1) {
+                    tasks.push(doc.getPage(i).then(function (page) {
+                        var viewport = page.getViewport({ scale: 1 });
+                        return { width: viewport.width, height: viewport.height };
+                    }));
+                }
+
+                return Promise.all(tasks).then(function (list) {
+                    sizes = list;
+                    layoutPdf(sizes);
+                    // 先画第一页，保证打开即有内容
+                    if (pdfRendered.length) renderPage(pdfRendered[0]);
+                    observePdfPages();
+                    showStatus('');
+                    updatePageIndicator();
+                    el.viewerBody.scrollTop = 0;
+                });
+            })
+            .catch(function () {
+                showStatus('');
+                el.viewerFrame.hidden = false;
+                el.viewerFrame.src = url;
+            });
+    }
 
     function openViewer(item) {
         el.viewerTitle.textContent = item.name;
         el.viewerGh.href = BLOB + encodePath(item.path);
         el.viewer.hidden = false;
         document.body.style.overflow = 'hidden';
+        el.viewerBody.scrollTop = 0;
         el.viewerClose.focus();
+        clearPdf();
+
+        if (pageTicker) clearInterval(pageTicker);
+        pageTicker = setInterval(updatePageIndicator, 350);
 
         resolveFileUrl(item.path).then(function (url) {
-            el.viewerFrame.src = url;
+            pdfUrl = url;
             el.viewerOpen.href = url;
+            openPdf(url, item);
         });
     }
 
     function closeViewer() {
         el.viewer.hidden = true;
+        if (pageTicker) {
+            clearInterval(pageTicker);
+            pageTicker = null;
+        }
+        pdfUrl = '';
+        clearPdf();
+        showStatus('');
         el.viewerFrame.src = 'about:blank';
+        el.viewerFrame.hidden = true;
         document.body.style.overflow = '';
     }
 
@@ -457,6 +680,22 @@
     });
 
     el.viewerClose.addEventListener('click', closeViewer);
+
+    el.viewerBody.addEventListener('scroll', function () {
+        updatePageIndicator();
+    }, { passive: true });
+
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+        if (el.viewer.hidden || !pdfDoc) return;
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(function () {
+            if (!pdfSizes.length) return;
+            layoutPdf(pdfSizes);
+            observePdfPages();
+            updatePageIndicator();
+        }, 260);
+    });
 
     el.viewer.addEventListener('click', function (event) {
         if (event.target === el.viewer) closeViewer();

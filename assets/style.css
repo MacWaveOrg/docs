@@ -387,6 +387,47 @@ a {
     background-color: #ffffff;
 }
 
+/* 用 PDF.js 渲染时的滚动容器 */
+.viewer-body {
+    flex: 1;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    background-color: #16233f;
+    padding: 12px;
+}
+
+.pdf-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.pdf-page {
+    background-color: #ffffff;
+    border-radius: 4px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+    overflow: hidden;
+    /* 未渲染前先占位，避免滚动时跳动 */
+    min-height: 40px;
+}
+
+.pdf-status {
+    padding: 40px 16px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.9rem;
+}
+
+.viewer-pages {
+    font-size: 0.82rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    padding: 0 4px;
+}
+
 /* ========== 页脚 ========== */
 .footer {
     margin-top: 46px;
@@ -470,13 +511,33 @@ a {
 
     .viewer-bar {
         flex-wrap: wrap;
-        padding: 10px 14px;
+        gap: 8px;
+        padding: 8px 12px;
+    }
+
+    .viewer-title {
+        width: 100%;
+        font-size: 0.9rem;
     }
 
     .viewer-actions {
         width: 100%;
         margin-left: 0;
-        justify-content: flex-end;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .viewer-actions .btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .viewer-body {
+        padding: 8px;
+    }
+
+    .pdf-pages {
+        gap: 8px;
     }
 }
 

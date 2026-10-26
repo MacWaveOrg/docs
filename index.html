@@ -67,6 +67,7 @@
         <div class="viewer-bar">
             <span class="viewer-title" id="viewer-title"></span>
             <div class="viewer-actions">
+                <span class="viewer-pages" id="viewer-pages" hidden></span>
                 <a class="btn btn-ghost" id="viewer-open" href="#" target="_blank" rel="noopener">
                     <span data-lang="en">Open in new tab</span>
                     <span data-lang="zh">新标签页打开</span>
@@ -78,7 +79,11 @@
                 </button>
             </div>
         </div>
-        <iframe class="viewer-frame" id="viewer-frame" title="PDF"></iframe>
+        <div class="viewer-body" id="viewer-body">
+            <div class="pdf-pages" id="pdf-pages"></div>
+            <div class="pdf-status" id="pdf-status" hidden></div>
+        </div>
+        <iframe class="viewer-frame" id="viewer-frame" title="PDF" hidden></iframe>
     </div>
 
     <script src="assets/app.js"></script>
