@@ -7,6 +7,7 @@
     var API = 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/';
     var BLOB = 'https://github.com/' + OWNER + '/' + REPO + '/blob/' + CONTENT_REF + '/';
     var TREE = 'https://github.com/' + OWNER + '/' + REPO + '/tree/' + CONTENT_REF + '/';
+    var RAW = 'https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/' + CONTENT_REF + '/';
 
     /* 站点自身文件，不出现在列表里 */
     var HIDDEN = { 'index.html': 1, 'assets': 1, '.gitignore': 1, '.nojekyll': 1, CNAME: 1 };
@@ -42,6 +43,7 @@
     };
 
     var cache = {};
+    var urlCache = {};
     var currentPath = '';
     var lang = 'en';
 
@@ -170,6 +172,29 @@
             });
     }
 
+    /* ---------- 文件地址解析 ----------
+       站点部署在 gh-pages，但文档内容写在 main。gh-pages 上的副本可能落后于
+       main，因此先探测同源地址；不存在时回落到 main 的原始文件。 */
+
+    function resolveFileUrl(path) {
+        if (urlCache[path]) return urlCache[path];
+
+        var local = encodeURI(path);
+        var remote = RAW + encodePath(path);
+
+        urlCache[path] = fetch(local, { method: 'HEAD', cache: 'no-store' })
+            .then(function (response) {
+                var type = response.headers.get('content-type') || '';
+                if (response.ok && type.indexOf('text/html') === -1) return local;
+                return remote;
+            })
+            .catch(function () {
+                return remote;
+            });
+
+        return urlCache[path];
+    }
+
     /* ---------- 渲染 ---------- */
 
     function sortItems(items) {
@@ -278,17 +303,22 @@
         ));
 
         if (item.type === 'file') {
-            actions.appendChild(makeLink(
-                t('download'),
-                'btn btn-quiet',
-                encodeURI(item.path),
-                true
-            ));
+            var download = makeLink(t('download'), 'btn btn-quiet', '#', false);
+            download.dataset.filePath = item.path;
+            download.classList.add('js-download');
+            actions.appendChild(download);
         }
 
         row.appendChild(icon);
         row.appendChild(main);
         row.appendChild(actions);
+
+        var downloadLink = actions.querySelector('.js-download');
+        if (downloadLink) {
+            resolveFileUrl(item.path).then(function (url) {
+                downloadLink.href = url;
+            });
+        }
 
         if (item.type === 'dir' || isPdf) {
             row.addEventListener('click', function (event) {
@@ -374,14 +404,16 @@
     /* ---------- PDF 阅读器 ---------- */
 
     function openViewer(item) {
-        var src = encodeURI(item.path);
         el.viewerTitle.textContent = item.name;
-        el.viewerFrame.src = src;
-        el.viewerOpen.href = src;
         el.viewerGh.href = BLOB + encodePath(item.path);
         el.viewer.hidden = false;
         document.body.style.overflow = 'hidden';
         el.viewerClose.focus();
+
+        resolveFileUrl(item.path).then(function (url) {
+            el.viewerFrame.src = url;
+            el.viewerOpen.href = url;
+        });
     }
 
     function closeViewer() {
