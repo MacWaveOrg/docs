@@ -222,3 +222,5 @@ dep_name: "bzip2"
 ## 4. Contributing
 
 　　Please submit changes through a Pull Request. For bug reports, field disputes or new architecture requirements, file an Issue or contact the maintainer (hi@macwave.org). Do not keep pushing to the old branch.
+
+　　Every day at 17:17 a CI job checks whether any package has a newer version available. If so, it fills in the url, sha256 and other information automatically and opens a Pull Request; please review it and merge once everything is confirmed correct.
