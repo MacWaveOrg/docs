@@ -1,0 +1,52 @@
+name: Sync docs to gh-pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'history/**'
+      - 'infosource/**'
+      - '*.md'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-gh-pages
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Mirror document folders into gh-pages
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+
+          git fetch origin gh-pages
+          git worktree add --detach "$RUNNER_TEMP/site" origin/gh-pages
+
+          # 只同步文档目录，站点自身文件（index.html、assets、CNAME、.nojekyll）保持不动
+          for dir in history infosource; do
+            [ -d "$dir" ] || continue
+            mkdir -p "$RUNNER_TEMP/site/$dir"
+            rsync -a --delete "$dir/" "$RUNNER_TEMP/site/$dir/"
+          done
+
+          cd "$RUNNER_TEMP/site"
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "gh-pages is already up to date"
+            exit 0
+          fi
+
+          git add -A
+          git commit -m "Sync documents from main (${GITHUB_SHA::7})"
+          git push origin HEAD:gh-pages
