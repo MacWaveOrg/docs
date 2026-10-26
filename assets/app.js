@@ -10,7 +10,12 @@
     var RAW = 'https://raw.githubusercontent.com/' + OWNER + '/' + REPO + '/' + CONTENT_REF + '/';
 
     /* 站点自身文件，不出现在列表里 */
-    var HIDDEN = { 'index.html': 1, 'assets': 1, '.gitignore': 1, '.nojekyll': 1, CNAME: 1 };
+    var HIDDEN = { 'index.html': 1, 'assets': 1, CNAME: 1 };
+
+    /* 以点开头的文件与目录（如 .github、.gitignore）一律不展示 */
+    function isHidden(name) {
+        return name.charAt(0) === '.' || HIDDEN[name] === 1;
+    }
 
     /* 接口不可用时的回退快照（commit 19586e2） */
     var SNAPSHOT = [
@@ -118,6 +123,7 @@
 
             if (seen[name]) return;
             seen[name] = true;
+            if (isHidden(name)) return;
             out.push({
                 name: name,
                 path: joinPath(path, name),
@@ -150,7 +156,7 @@
             })
             .then(function (data) {
                 var items = (Array.isArray(data) ? data : [])
-                    .filter(function (item) { return !HIDDEN[item.name]; })
+                    .filter(function (item) { return !isHidden(item.name); })
                     .map(function (item) {
                         return {
                             name: item.name,
