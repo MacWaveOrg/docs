@@ -79,9 +79,6 @@ tree ~/src/MacWaveOrg/infosource
 │   │   ├── jq
 │   │   │   ├── _jq@1.8.2
 │   │   │   └── _jq@common
-│   │   │   │   ├── trollrestore
-│   │   │   ├── _trollrestore@1.0
-│   │   │   └── _trollrestore@common
 │   │   └── wget
 │   │       ├── _wget@1.25.0
 │   │       └── _wget@common
