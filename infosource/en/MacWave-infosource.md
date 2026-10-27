@@ -157,8 +157,8 @@ aut: "GNU Project"
 | bin_name | Binary Name | The name of the executable binary | Must not be empty |
 | des | Description | The description of the package | |
 | hom | Homepage | The homepage of the package | |
-| lic | Licence | The licence of the package; common ones are MIT, GPL and so on | |
-| aut | Author | The author of the package, either a person or an organisation | |
+| lic | License | The license of the package; common ones are MIT, GPL and so on | |
+| aut | Author | The author of the package, either a person or an organization | |
 
 ### B. Dependency index
 
