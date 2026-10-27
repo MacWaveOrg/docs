@@ -321,9 +321,25 @@ wave install ffmpeg --ver=9.0
 
 　　后来，Python3.15发布，为了尝鲜新特性同时兼容更高版本，我便升级了我的Python（3.14.8 >>> 3.15.0），结果MacWave的linkquery崩了！提示缺少request库，我发现，MacWave的Shebang为`#!/usr/bin/env python3`，此时env变为3.15，可是request装在了pyenv的3.14上，于是参考Homebrew打包Ruby的做法，我在3.1起打包了MacWave自己的、独立的CPython解释器，这样一来，不仅避免了用户有过高/过低（很多时候不便更新/降级）的Python版本的问题，甚至都无需用户安装Python，这无疑极大的降低了使用门槛。
 
+　　我还注意到：这时候仍然没有`wave upgrade`命令。其他包管理器加upgrade命令很容易，但在MacWave，这是一个需要谨慎考虑的问题。因为MacWave天然支持多版本隔离和共存，upgrade表示什么意思？下载最新版本，升级已有版本，删除旧版本并下载新版本，还是什么？最终，我敲定方案如下：
+
+```bash
+wave upgrade {pkg}                       # 下载软件包的最新版本（同 install），保留旧版
+wave upgrade {pkg} --remove-old-version  # 下载软件包的最新版本并移除旧版
+wave upgrade {pkg} --remove-old-versions # 同上，完全等价
+wave upgrade {pkg} --rov                 # 同上，完全等价
+wave upgrade {pkg} -X                    # 同上，完全等价
+```
+
+　　我一开始想给`--remove-old-versions`设置一个短参数，但找不到合适的，因为`-R`通常表示，`-r`通常表示递归，索性就用比较短的长参数`--rov`。
+
+　　最初长参数只有`--remove-old-version`合法，但时间长了就连自己都不记得到底是verison还是versions，索性在3.2.1将它们全部设为合法。
+
+　　不过，我还是希望有真正的短参数，毕竟确实很方便，于是在3.2.1还是忍不住将`-X`（大写）作为了短参数。为什么选择字母X？因为Rr需要预留递归(recursive)、反转(reverse)、回滚(rollback)等功能，而字母X不仅不会影响预留，而且也没什么特定的功能，而且我觉得X和“删除”的符号（叉形）看起来非常相似，算是一种“象形”，很好记住。我在3.2.1版本加入了它。
+
 ---
 
-　　编辑于 2026-10-15，此时最新版：3.1.0
+　　编辑于 2026-10-27，此时最新版：3.2.1
 
 ---
 

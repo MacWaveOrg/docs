@@ -114,13 +114,13 @@ gaochengfang@gaochengfangdeMacBook-Air ~ %
 
 　　Later I frantically piled on features over a few days, but I had not taken part in designing the architecture. That later forced a rewrite, when I started designing the core architecture and writing the logic myself — but that is a story for later.
 
-　　Then I learned about GitHub Pages[^10] and started writing a web page, no longer relying on the 302 redirect. I wrote static HTML with the DeepSeek web client, iterated many times, designed the UI and icons, and soon had a program with decent style but poor screen adaptation. I figured "that's good enough, it's not like I'm building a rocket", and only optimised it much later.
+　　Then I learned about GitHub Pages[^10] and started writing a web page, no longer relying on the 302 redirect. I wrote static HTML with the DeepSeek web client, iterated many times, designed the UI and icons, and soon had a program with decent style but poor screen adaptation. I figured "that's good enough, it's not like I'm building a rocket", and only optimized it much later.
 
 　　By then the site already had almost every feature: latest version, latest beta (later removed), introduction, commands, arguments, contact details...
 
 　　I had my first custom email address: hi@macwave.org.
 
-　　Next I added a colourful progress bar and help content, so the terminal was no longer dull; added mandatory SHA256[^11] verification to make downloads safe; added `-C`, `--continue` and `.partial` so downloads no longer had to worry about network interruptions; added prompts at risky points (in bold red type) to lower the chance of mistakes; made downloads go to `/tmp` first so that incomplete or dangerous packages would not pollute anything else; and refined many prompts to be friendlier...
+　　Next I added a colorful progress bar and help content, so the terminal was no longer dull; added mandatory SHA256[^11] verification to make downloads safe; added `-C`, `--continue` and `.partial` so downloads no longer had to worry about network interruptions; added prompts at risky points (in bold red type) to lower the chance of mistakes; made downloads go to `/tmp` first so that incomplete or dangerous packages would not pollute anything else; and refined many prompts to be friendlier...
 
 　　At last, on 2026-08-16, after many iterations, betas and RCs, MacWave reached its first stable release — 1.0!
 
@@ -142,11 +142,11 @@ gaochengfang@gaochengfangdeMacBook-Air ~ %
 
 　　Also, I stopped using a local index — a local index is really a nuisance: users are forced to download unnecessary content, and they have to update it manually (many forget, like me) or they cannot get new versions. And developers had to ship index updates as well... So I switched to pulling it live every time. One argument against that is that users need a network connection to look up package information, but for anyone who wants to download a package, a network connection is a given, so it is not a problem.
 
-　　Later I realised that many operations are easier in Shell than in Python — unzipping, moving, computing SHA256... takes a single command in Shell. So I decoupled many `.sh` files and kept the parts that Python handles more conveniently as `.py` files. The directory structure and files from then on were very similar to today's MacWave. I wrote down a few basic principles at the time: `lib/` holds the core programs, `pkg/` holds programs related to packages.
+　　Later I realized that many operations are easier in Shell than in Python — unzipping, moving, computing SHA256... takes a single command in Shell. So I decoupled many `.sh` files and kept the parts that Python handles more conveniently as `.py` files. The directory structure and files from then on were very similar to today's MacWave. I wrote down a few basic principles at the time: `lib/` holds the core programs, `pkg/` holds programs related to packages.
 
-　　It takes only a few sentences to describe, but 2.0 went through a great deal of failure and trial and error. Along the way the AI-written code logic became chaotic and produced bugs that no amount of patching could fix. I realised that without good architecture, even the cleverest code is hard to maintain. So I made a historic and extremely important decision — rewrite all of MacWave. That decision determined MacWave's present and its future.
+　　It takes only a few sentences to describe, but 2.0 went through a great deal of failure and trial and error. Along the way the AI-written code logic became chaotic and produced bugs that no amount of patching could fix. I realized that without good architecture, even the cleverest code is hard to maintain. So I made a historic and extremely important decision — rewrite all of MacWave. That decision determined MacWave's present and its future.
 
-　　I removed argument parsing from the main program and made it purely a "dispatch entry": a mapping table and a dictionary recognise the user's command and dispatch it, as the original string, to each program, letting each program parse it itself. That way the main program is only 80 lines and very clean.
+　　I removed argument parsing from the main program and made it purely a "dispatch entry": a mapping table and a dictionary recognize the user's command and dispatch it, as the original string, to each program, letting each program parse it itself. That way the main program is only 80 lines and very clean.
 
 　　I redesigned every download flow and every step, drew the architecture diagram, wrote the core logic, and made sure the code stayed under my control.
 
@@ -256,7 +256,7 @@ wave install {pkg} --unlink
 
 　　In this version I ported MacWave to Linux, and the long-reserved LinuxWave was finally activated. Mach-O addressing was ported from Xcode Command Line Tools to ELF[^27], and the path options became: 1. `~/.local/linuxwave`, 2. `/opt/linuxwave`, 3. `/usr/local/linuxwave`, 4. `/home/linuxwave/.linuxwave`, 5. custom. The config file locations are `/etc/linuxwave_config` and `~/.config/linuxwave_config` respectively; shared installs (option 4) always use `/etc/linuxwave_config`, to ensure that every user on the machine resolves to the same installation. It needs `patchelf`, Python 3.14+, and a one-time sudo; the linuxwave account is created automatically if it does not exist. After a shared install, the user is prompted to log in again or run `newgrp linuxwave`. Here I borrowed Linuxbrew's user-group approach (thanks Linuxbrew, though I still hit plenty of pitfalls), which gave us path 4 (`/home/linuxwave/.linuxwave`). That really is a good scheme: not only globally shared, but installing packages needs no sudo either.
 
-　　Next I created the strictest CI tests ever: randomised — all kinds of commands and arguments, wrong and right, randomly interrupted, and so on. Anything you can think of could happen in the CI tests. After extensive testing and optimisation, the CI is now very stable.
+　　Next I created the strictest CI tests ever: randomized — all kinds of commands and arguments, wrong and right, randomly interrupted, and so on. Anything you can think of could happen in the CI tests. After extensive testing and optimization, the CI is now very stable.
 
 　　I thought: what if a user uses my `install.sh` inside a script? Nobody in a script is going to answer Yy. So in MacWave 2.5 I added automated installation:
 
@@ -264,7 +264,7 @@ wave install {pkg} --unlink
 
 | Option | Description |
 | --- | --- |
-| `--silent, -S` | No interaction at all: the directory menu and the licence agreement are answered automatically |
+| `--silent, -S` | No interaction at all: the directory menu and the license agreement are answered automatically |
 | `--dir-option=N` | Choose menu item N directly (no menu is shown) |
 | `--dir-option=N=DIR` | Choose menu item N; for the custom item, use DIR as the install directory |
 | `--help` | List all options |
@@ -289,11 +289,11 @@ curl -fsSL https://raw.githubusercontent.com/MacWaveOrg/MacWave/HEAD/lib/install
 
 　　But I felt there were some problems: 1. Since option 3 (Intel) or option 4 (Apple Silicon) are custom directories, why write a number at all? It is also error-prone. 2. The command above is still `curl | bash`; it should be changed to the more robust `/bin/bash -c "$(curl …)"`. So for these two points I released MacWave/LinuxWave 3.0.1.
 
-　　In MacWave/LinuxWave 2.6 I realised that MacWave/LinuxWave had become a huge project, so in 2.6, just as mxcl[^2] handed the Homebrew repository over to the Homebrew organisation, I moved MacWave/LinuxWave from my personal account to the MacWaveOrg/LinuxWaveOrg organisation, and bought linuxwave.org (the old domain linuxwave.macwave.org was 301-redirected to the new one), dedicating one organisation to a single project. It was an unprecedented migration: to make maintenance easier, some branches were migrated into repositories. Read-only snapshots of the old repositories were copied and archived; a week later I added a legacy- prefix to the names of those branches.
+　　In MacWave/LinuxWave 2.6 I realized that MacWave/LinuxWave had become a huge project, so in 2.6, just as mxcl[^2] handed the Homebrew repository over to the Homebrew organization, I moved MacWave/LinuxWave from my personal account to the MacWaveOrg/LinuxWaveOrg organization, and bought linuxwave.org (the old domain linuxwave.macwave.org was 301-redirected to the new one), dedicating one organization to a single project. It was an unprecedented migration: to make maintenance easier, some branches were migrated into repositories. Read-only snapshots of the old repositories were copied and archived; a week later I added a legacy- prefix to the names of those branches.
 
 　　Thanks to the purchase of the new domain linuxwave.org, LinuxWave released version 2.6.2 specifically.
 
-　　I thought: since there is already a dedicated organisation, `infosource`, `configdata` and `gh-pages` could perfectly well become repositories, which is even more convenient. So I released MacWave/LinuxWave 3.0, giving users of old versions a 7-day migration window.
+　　I thought: since there is already a dedicated organization, `infosource`, `configdata` and `gh-pages` could perfectly well become repositories, which is even more convenient. So I released MacWave/LinuxWave 3.0, giving users of old versions a 7-day migration window.
 
 　　Between MacWave/LinuxWave 2.6 and 3.0 the following major migrations took place:
 
@@ -321,17 +321,33 @@ wave install ffmpeg --ver=9.0
 
 　　Later, Python 3.15 was released. To try the new features while staying compatible with newer versions, I upgraded my Python (3.14.8 >>> 3.15.0), and MacWave's linkquery broke! It reported a missing request library. I found that MacWave's shebang is `#!/usr/bin/env python3`; env now pointed at 3.15, but request was installed on 3.14 under pyenv. So, following how Homebrew packages Ruby, from 3.1 I bundled MacWave's own independent CPython interpreter. This not only avoids the problem of a user's Python being too new or too old (which is often inconvenient to update or downgrade), it even removes the need for users to install Python at all, which undoubtedly lowers the barrier to entry enormously.
 
+　　I also noticed: at this point there was still no `wave upgrade` command. Adding an upgrade command is easy for other package managers, but in MacWave it is a question that needs careful thought. Because MacWave naturally supports multi-version isolation and coexistence, what does upgrade even mean? Download the latest version, upgrade the existing version, delete the old version and download a new one, or something else? In the end, I settled on the following scheme:
+
+```bash
+wave upgrade {pkg}                       # latest version, keep old version
+wave upgrade {pkg} --remove-old-version  # latest version, remove old version
+wave upgrade {pkg} --remove-old-versions # same as above, completely equivalent
+wave upgrade {pkg} --rov                 # same as above, completely equivalent
+wave upgrade {pkg} -X                    # same as above, completely equivalent
+```
+
+　　At first I wanted to give `--remove-old-versions` a short flag, but could not find a suitable one: `-R` is usually taken and `-r` usually means recursive, so I simply used the shorter long option `--rov`.
+
+　　At first only the long option `--remove-old-version` was valid, but over time even I could not remember whether it was verison or versions, so in 3.2.1 I made them all valid.
+
+　　But I still wanted a real short flag — it really is convenient — so in 3.2.1 I could not resist making `-X` (uppercase) a short flag. Why the letter X? Because Rr needs to reserve recursion (recursive), reversal (reverse) and rollback (rollback), and the letter X not only leaves those reservations untouched but also has no fixed meaning, and I think X looks very much like the symbol for "delete" (a cross), which makes it a kind of pictogram that is easy to remember. I added it in 3.2.1.
+
 ---
 
-　　Edited 2026-10-15, latest version at the time: 3.1.0
+　　Edited 2026-10-27, latest version at the time: 3.2.1
 
 ---
 
 　　Every great tool begins with something insignificant.
 
-[^1]: MacWave: a package manager developed by Sha0huaZhang on 2026-08-05, whose first stable release came out on 2026-08-16; it has since moved under the MacWave organisation, with macwave.org as its website.
+[^1]: MacWave: a package manager developed by Sha0huaZhang on 2026-08-05, whose first stable release came out on 2026-08-16; it has since moved under the MacWave organization, with macwave.org as its website.
 
-[^2]: Homebrew: a package manager developed by Max Howell in 2009, characterised by downloading pre-built binary packages so that no local compilation is needed. It has since moved from a personal account to the Homebrew organisation; website: brew.sh.
+[^2]: Homebrew: a package manager developed by Max Howell in 2009, characterized by downloading pre-built binary packages so that no local compilation is needed. It has since moved from a personal account to the Homebrew organization; website: brew.sh.
 
 [^3]: MacPorts: a package manager started jointly by several Apple employees in 2002, originally launched as part of the OpenDarwin project. Its characteristic is installing software into a separate directory, avoiding mixing files with system-provided software or with other package managers and thus reducing the risk of conflicts; website: macports.org.
 
