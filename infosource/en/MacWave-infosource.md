@@ -79,9 +79,6 @@ tree ~/src/MacWaveOrg/infosource
 │   │   ├── jq
 │   │   │   ├── _jq@1.8.2
 │   │   │   └── _jq@common
-│   │   │   │   ├── trollrestore
-│   │   │   ├── _trollrestore@1.0
-│   │   │   └── _trollrestore@common
 │   │   └── wget
 │   │       ├── _wget@1.25.0
 │   │       └── _wget@common
@@ -157,8 +154,8 @@ aut: "GNU Project"
 | bin_name | Binary Name | The name of the executable binary | Must not be empty |
 | des | Description | The description of the package | |
 | hom | Homepage | The homepage of the package | |
-| lic | Licence | The licence of the package; common ones are MIT, GPL and so on | |
-| aut | Author | The author of the package, either a person or an organisation | |
+| lic | License | The license of the package; common ones are MIT, GPL and so on | |
+| aut | Author | The author of the package, either a person or an organization | |
 
 ### B. Dependency index
 
