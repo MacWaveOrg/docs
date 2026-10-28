@@ -9,7 +9,7 @@
 </head>
 <body>
     <header class="topbar">
-        <a class="brand" href="#/">
+        <a class="brand" href="./">
             <span class="brand-mark">MacWave</span>
             <span class="brand-sub" data-lang="en">Docs</span>
             <span class="brand-sub" data-lang="zh">文档</span>
@@ -27,32 +27,13 @@
 
     <main class="page">
         <section class="hero">
-            <h1 data-lang="en">Docs</h1>
+            <h1 data-lang="en">Documents</h1>
             <h1 data-lang="zh">文档</h1>
-            <p data-lang="en">
-                Documents kept in the <code>MacWaveOrg/docs</code> repository. Folders mirror the
-                repository layout; PDFs open right here in the browser.
-            </p>
-            <p data-lang="zh">
-                <code>MacWaveOrg/docs</code> 仓库中的文档。目录结构与仓库保持一致，PDF 可直接在浏览器中阅读。
-            </p>
         </section>
-
-        <nav class="pathbar" aria-label="Breadcrumb">
-            <div class="crumbs" id="crumbs"></div>
-            <div class="pathbar-spacer"></div>
-            <a class="btn btn-quiet" id="dir-link" href="https://github.com/MacWaveOrg/docs/tree/main" target="_blank" rel="noopener">
-                <span data-lang="en">View this folder on GitHub &rarr;</span>
-                <span data-lang="zh">在 GitHub 上查看此目录 &rarr;</span>
-            </a>
-        </nav>
 
         <div id="notice" class="notice" hidden></div>
 
-        <div class="list" id="list" aria-live="polite">
-            <div class="empty" data-lang="en">Loading&hellip;</div>
-            <div class="empty" data-lang="zh">加载中&hellip;</div>
-        </div>
+        <div class="list doc-list" id="list" aria-live="polite"></div>
 
         <footer class="footer">
             <span>&copy; MacWave</span>

@@ -547,3 +547,66 @@ a {
         display: none;
     }
 }
+
+/* ---------- 首页：两份文档的入口 ----------
+   站点只展示两份 PDF，所以每行做得比目录列表更大、更像一个条目，
+   并且整行都是按钮（点哪里都能读）。 */
+
+.doc-list .doc-row {
+    width: 100%;
+    grid-template-columns: 34px minmax(0, 1fr) auto;
+    gap: 16px;
+    padding: 18px 20px;
+    border: 0;
+    border-top: 1px solid var(--line);
+    background: none;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.doc-list .doc-row:first-child {
+    border-top: 0;
+}
+
+.doc-list .doc-row:hover,
+.doc-list .doc-row:focus-visible {
+    background-color: rgba(255, 255, 255, 0.07);
+    outline: none;
+}
+
+.doc-list .doc-row:focus-visible {
+    box-shadow: inset 0 0 0 2px rgba(74, 144, 226, 0.6);
+}
+
+.doc-list .icon.pdf {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    font-size: 0.66rem;
+}
+
+.doc-list .doc-main {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.doc-list .row-name {
+    font-size: 1.06rem;
+    font-weight: 600;
+}
+
+/* 窄屏上把「阅读」按钮收成图标位，避免挤压标题 */
+@media (max-width: 520px) {
+    .doc-list .doc-row {
+        grid-template-columns: 30px minmax(0, 1fr);
+        padding: 16px;
+    }
+
+    .doc-list .row-actions {
+        display: none;
+    }
+}
